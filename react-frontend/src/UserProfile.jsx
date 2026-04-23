@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import './forum.css';
 
+const DEFAULT_AVATAR =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='32' fill='%23dbe4f0'/><circle cx='32' cy='24' r='12' fill='%23859bb5'/><path d='M14 54c3-10 11-16 18-16s15 6 18 16' fill='%23859bb5'/></svg>";
+
 const UserProfile = () => {
   const { username } = useParams();
   const location = useLocation();
@@ -31,7 +34,9 @@ const UserProfile = () => {
       .then(data => {
         if (data.success) {
           setProfile(data.profile);
-          const url = `${data.profile.avatar}?t=${Date.now()}`;
+          const url = data.profile.avatar
+            ? `${data.profile.avatar}?t=${Date.now()}`
+            : DEFAULT_AVATAR;
           setAvatarUrl(url);
         }
       });
@@ -114,6 +119,7 @@ const UserProfile = () => {
             <img
               src={avatarUrl}
               alt="avatar"
+              onError={() => setAvatarUrl(DEFAULT_AVATAR)}
               style={{ width: '48px', height: '48px', borderRadius: '50%' }}
             />
             <span className="greeting">👤 {profile.username}'s Profile</span>

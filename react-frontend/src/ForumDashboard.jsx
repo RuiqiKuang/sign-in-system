@@ -4,6 +4,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import CommentSection from './CommentSection';
 import './forum.css';
 
+const DEFAULT_AVATAR =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='32' fill='%23dbe4f0'/><circle cx='32' cy='24' r='12' fill='%23859bb5'/><path d='M14 54c3-10 11-16 18-16s15 6 18 16' fill='%23859bb5'/></svg>";
+
 const ForumDashboard = () => {
   const [username, setUsername] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -20,8 +23,10 @@ const ForumDashboard = () => {
           fetch(`http://localhost:3001/users/${data.username}/profile`, { credentials: 'include' })
             .then(res => res.json())
             .then(profileData => {
-              if (profileData.success && profileData.profile.avatar) {
-                const url = `${profileData.profile.avatar}?t=${Date.now()}`;
+              if (profileData.success) {
+                const url = profileData.profile.avatar
+                  ? `${profileData.profile.avatar}?t=${Date.now()}`
+                  : DEFAULT_AVATAR;
                 setAvatarUrl(url);
               }
             });
@@ -88,7 +93,7 @@ const ForumDashboard = () => {
       <div className="dashboard-header">
         <div className="top-bar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {avatarUrl && <img src={avatarUrl} alt="avatar" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />}
+            {avatarUrl && <img src={avatarUrl} alt="avatar" onError={() => setAvatarUrl(DEFAULT_AVATAR)} style={{ width: '40px', height: '40px', borderRadius: '50%' }} />}
             <span className="greeting">Hi, {username}</span>
           </div>
           <Link to={`/profile/${username}`}><button className="profile-btn">My Profile</button></Link>
